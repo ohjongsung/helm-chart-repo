@@ -1,12 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "locust.worker" . }}
+  name: {{ include "locust.worker" . }}
   labels:
     heritage: {{ .Release.Service | quote }}
     release: {{ .Release.Name | quote }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-    app: {{ template "locust.fullname" . }}
+    app: {{ include "locust.fullname" . }}
     component: worker
 spec:
   replicas: {{ default 2 .Values.worker.replicaCount }}
@@ -17,8 +17,9 @@ spec:
       maxUnavailable: {{ default 1 .Values.worker.maxUnavailable }}
   template:
     metadata:
+      namespace: locust
       labels:
-        app: {{ template "locust.fullname" . }}
+        app: {{ include "locust.fullname" . }}
         component: worker
     spec:
     {{- if .Values.image.pullSecrets }}
@@ -43,7 +44,7 @@ spec:
         - name: LOCUST_MODE
           value: "worker"
         - name: LOCUST_MASTER
-          value: {{ template "locust.master-svc" . }}
+          value: {{ include "locust.master-svc" . }}
         - name: LOCUST_MASTER_WEB
           value: "{{ .Values.service.internalPort }}"
         - name: TARGET_HOST
@@ -57,7 +58,7 @@ spec:
       volumes:
         - name: "locust-tasks"
           configMap:
-            name: {{ template "locust.worker-configmap" . }}
+            name: {{ include "locust.worker-configmap" . }}
 {{- if .Values.extraVolumes }}
 {{ toYaml .Values.extraVolumes | indent 8 }}
 {{- end }}

@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "locust.master-svc" . }}
+  name: {{ include "locust.master-svc" . }}
   labels:
     heritage: {{ .Release.Service | quote }}
     release: {{ .Release.Name | quote }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-    app: {{ template "locust.fullname" . }}
+    app: {{ include "locust.fullname" . }}
     component: "master"
     {{- range $key, $value :=  .Values.service.extraLabels }}
     {{ $key }}: {{ $value | quote }}
@@ -34,6 +34,6 @@ spec:
     protocol: TCP
     targetPort: 5558
   selector:
-    app: {{ template "locust.fullname" . }}
+    app: {{ include "locust.fullname" . }}
     component: "master"
   sessionAffinity: None

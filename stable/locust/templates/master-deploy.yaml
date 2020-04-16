@@ -1,9 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "locust.master" . }}
+  name: {{ include "locust.master" . }}
+  namespace: locust
   labels:
-    app: {{ template "locust.fullname" . }}
+    app: {{ include "locust.fullname" . }}
     heritage: {{ .Release.Service | quote }}
     release: {{ .Release.Name | quote }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
@@ -19,7 +20,7 @@ spec:
     metadata:
       labels:
         release: {{ .Release.Name | quote }}
-        app: {{ template "locust.fullname" . }}
+        app: {{ include "locust.fullname" . }}
         component: "master"
     spec:
     {{- if .Values.image.pullSecrets }}
@@ -73,7 +74,7 @@ spec:
       volumes:
       - name: "locust-tasks"
         configMap:
-          name: {{ template "locust.worker-configmap" . }}
+          name: {{ include "locust.worker-configmap" . }}
 {{- if .Values.extraVolumes }}
 {{ toYaml .Values.extraVolumes | indent 6 }}
 {{- end }}
